@@ -20,17 +20,25 @@ fn main() {
             .expect("Failed to read glob pattern")
             .count();
 
+        // todo: add multithreading
+
         paths
             .into_iter()
             .filter_map(|p| match p {
-                Ok(value) => Some(value),
+                Ok(value) => match value.is_file() {
+                    true => Some(value),
+                    false => None,
+                },
                 Err(_) => None,
             })
-            .filter(|p| p.is_file())
             .enumerate()
             .for_each(|(idx, path)| {
                 let percent = format!("{:.1}%", (idx as f32 / n_paths as f32) * 100.0);
-                print!("Checking path {:?} ({} / {}, {})\r", path, idx, n_paths, percent);
+
+                print!(
+                    "Checking file {:?} ({} / {}, {})\r",
+                    path, idx, n_paths, percent
+                );
 
                 match check_asset(&path) {
                     true => (),
