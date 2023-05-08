@@ -8,17 +8,14 @@ use sha2::{Digest, Sha256};
 use std::{ffi::OsStr, fs, path::PathBuf};
 
 fn main() {
+    println!("Checking assets...");
+
     let data = fs::read_to_string("./config.json").expect("Failed to read config.json");
     let config: Config = serde_json::from_str(&data).expect("Failed to deserialize config.json");
 
     for asset_folder in config.assetpaths {
-        println!("Checking asset folder {}", asset_folder);
         let glob_pattern = format!("{}/**/*", asset_folder);
-
         let paths = glob(&glob_pattern).expect("Failed to read glob pattern");
-        let n_paths = glob(&glob_pattern)
-            .expect("Failed to read glob pattern")
-            .count();
 
         // todo: add multithreading
 
@@ -32,20 +29,15 @@ fn main() {
                 Err(_) => None,
             })
             .enumerate()
-            .for_each(|(idx, path)| {
-                let percent = format!("{:.1}%", (idx as f32 / n_paths as f32) * 100.0);
-
-                print!(
-                    "Checking file {:?} ({} / {}, {})\r",
-                    path, idx, n_paths, percent
-                );
-
+            .for_each(|(_, path)| {
                 match check_asset(&path) {
                     true => (),
-                    false => println!("\nAsset path {:?} failed verification!", path),
+                    false => println!("fail: {:?}", path),
                 }
             });
     }
+
+    println!("Done!")
 }
 
 fn check_asset(path: &PathBuf) -> bool {
