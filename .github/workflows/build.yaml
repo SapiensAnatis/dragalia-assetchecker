@@ -36,13 +36,13 @@ jobs:
       - name: cargo build
         run: |
           cargo build --release
-          mv ./target/release/dragalia-cdn ./dragalia-cdn-${{ matrix.target }}
+          mv ./target/release/dragalia-assetchecker ./dragalia-assetchecker-${{ matrix.target }}
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.target }}
-          path: ./dragalia-cdn-${{ matrix.target }}
+          path: ./dragalia-assetchecker-${{ matrix.target }}
 
   build_windows:
     runs-on: windows-latest
@@ -61,10 +61,10 @@ jobs:
       - name: cargo build
         run: |
           cargo build --release
-          mv .\target\release\dragalia-cdn.exe .\dragalia-cdn-x86_64-pc-windows-msvc.exe
+          mv .\target\release\dragalia-assetchecker.exe .\dragalia-assetchecker-x86_64-pc-windows-msvc.exe
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: x86_64-pc-windows-msvc
-          path: .\dragalia-cdn-x86_64-pc-windows-msvc.exe
+          path: .\dragalia-assetchecker-x86_64-pc-windows-msvc.exe
