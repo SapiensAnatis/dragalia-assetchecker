@@ -1,0 +1,15 @@
+name: manual build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        type: string
+        required: true
+        description: git ref to checkout
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      ref: ${{ inputs.ref }}

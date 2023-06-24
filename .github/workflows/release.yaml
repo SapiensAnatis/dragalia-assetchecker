@@ -1,0 +1,36 @@
+name: release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "*"
+      #    branches:
+#      - master
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      ref: ${{ github.ref_name }}
+
+  make-release:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts/
+
+      - uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: ./artifacts/**/*
+          tag_name: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
